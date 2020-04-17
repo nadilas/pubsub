@@ -248,8 +248,9 @@ func (g *GoogleCloud) subscribe(opts ps.HandlerOptions, h ps.MsgHandler, ready c
 
 			for _, m := range res.ReceivedMessages {
 				pool <- &WorkerMsg{
-					m:   m.Message,
-					ctx: ctx,
+					m:     m.Message,
+					ackID: m.AckId,
+					ctx:   ctx,
 				}
 			}
 
