@@ -190,7 +190,7 @@ func (g *GoogleCloud) subscribe(opts ps.HandlerOptions, h ps.MsgHandler, ready c
 								AckIds:       []string{w.ackID},
 							}
 
-							err := g.subClient.Acknowledge(ctx, req)
+							err := g.subClient.Acknowledge(context.Background(), req)
 							if err != nil {
 								logrus.Errorf(
 									"Failed to Ack %s on sub %v. Err: %v",
