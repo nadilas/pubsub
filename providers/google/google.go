@@ -222,6 +222,9 @@ func (g *GoogleCloud) subscribe(opts ps.HandlerOptions, h ps.MsgHandler, ready c
 			}
 
 			ctx, cancel := context.WithCancel(context.Background())
+			mutex.Lock()
+			g.subs[subName] = cancel
+			mutex.Unlock()
 
 			req := &pbpb.PullRequest{
 				Subscription: fmt.Sprintf("projects/%s/subscriptions/%s", g.projectID, subName),
@@ -253,8 +256,6 @@ func (g *GoogleCloud) subscribe(opts ps.HandlerOptions, h ps.MsgHandler, ready c
 					ctx:   ctx,
 				}
 			}
-
-			g.subs[subName] = cancel
 		}
 	}()
 }
