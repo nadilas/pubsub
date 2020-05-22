@@ -198,11 +198,26 @@ func (g *GoogleCloud) subscribe(opts ps.HandlerOptions, h ps.MsgHandler, ready c
 								)
 							}
 						},
-						Nack: func() {},
+						Nack: func() {
+							req := &pbpb.ModifyAckDeadlineRequest{
+								Subscription:       "projects/" + g.projectID + "/subscriptions/" + subName,
+								AckIds:             []string{w.ackID},
+								AckDeadlineSeconds: 300,
+							}
+
+							err := g.subClient.ModifyAckDeadline(context.Background(), req)
+							if err != nil {
+								logrus.Errorf(
+									"Failed to modify deadline %s on sub %v. Err: %v",
+									w.ackID, subName, err,
+								)
+							}
+						},
 					}
 
 					err = h(ctx, msg)
 					if err != nil {
+						msg.Nack()
 						return
 					}
 
